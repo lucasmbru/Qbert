@@ -13,29 +13,18 @@ module FunctionsQbert =
 
         // Function to print the board
         let printBoard (board : Board) =
-            for row in board do
-                for cell in row do
-                    printf "%c " cell
+            for row: Cell list in board do
+                for cell: Cell in row do
+                    printf "%c " (cell |> cellToChar)
                 printfn ""
 
- 
-        // Function to update the board with the player's new position
-        let updateBoard (board : Board) (player : Player) (previusPosition : Player) = 
-            // Mark the previous position with 'B'
-            let boardWithHistory: char list list = 
-                board |> List.mapi (fun i row -> 
-                    row |> List.mapi (fun j cell -> 
-                        if i = previusPosition.X && j = previusPosition.Y then 'B' else cell))
-
-            // Place the player in the new position with 'Q'
-            boardWithHistory |> List.mapi (fun i row -> 
-                row |> List.mapi (fun j cell -> 
-                    if i = player.X && j = player.Y then 'Q' else cell))
-        
         // Function to get the character from a position in the board
-        let getCharFromPosition (board : Board) (x : int, y : int) =
+        let getCharFromPosition (board : Board) (x : int, y : int) : char =
             // Aqui deberia hacerse una excepcion si x o y son mayores a la longitud de la lista
             // TODO
+            List.nth (List.nth board x) y |> cellToChar
+        
+        let getCellFromPosition (board : Board) (x : int, y : int) : Cell =
             List.nth (List.nth board x) y
 
         let isBaseOfPyramid (board : Board) (x : int, y : int) =
@@ -44,32 +33,54 @@ module FunctionsQbert =
             if x + y = rows - 1 then true
             else false 
 
+        // Function to update the board with the player's new position
+        let updateBoard (board : Board) (player : Player) (previusPosition : Player) : Board * Player= 
+            
+            // Mark the previous position with Visited if the previus cell is NoVisited
+            let boardWithHistory: Cell list list = 
+                board |> List.mapi (fun (i: int) (row: Cell list) -> 
+                    row |> List.mapi (fun (j: int) (cell: Cell) -> 
+                        if i = previusPosition.X && j = previusPosition.Y && cell <> Empty then
+                            match cell with  
+                            | NoVisited -> Visited          // If the cell is NoVisited, we change it to Visited
+                            | _ -> cell                     // If the cell is Visited or FlyingDics we don't change it
+                        else cell)) 
+                    
+            // If the player is in a FlyingDisc, we must change that cell to Empty and move the player to the position (1, 1)
+            let (newBoard: Cell list list, newPlayer: Player) = 
+                if (getCellFromPosition boardWithHistory (player.X, player.Y) = FlyingDisc) then
+                    // Mark the position (1, 1) as Visited if the player is in a FlyingDisc and move the player to (1, 1)
+                    boardWithHistory |> List.mapi (fun (i: int) (row: Cell list) -> 
+                        row |> List.mapi (fun (j: int) (cell: Cell) -> 
+                            match (i, j) with
+                            | 1, 1 -> Visited                                                                   // Mark the position (1, 1) as Visited
+                            | pX, pY when pX = player.X && pY = player.Y -> Empty                    // Mark the position if FlyingDisc as Empty
+                            | _ -> cell)), { player with X = 1; Y = 1 }                                         // Mark the position of the player to (1, 1)
+                else 
+                    // If the player is not in a FlyingDisc, we don't change the board
+                    (boardWithHistory, player)
+            (newBoard, newPlayer)
+
+
     module FunctionPlayer =
 
         // Function to move the player
         let movePlayer (player : Player) (dx : int, dy : int) = 
             {player with X = player.X + dx; Y = player.Y + dy}
 
-
         // Function to check if the move is valid matching with initialBoard
         let isValidMove (initialBoard: Board) (player : Player) =
-            let rows: int = List.length initialBoard
-            let cols: int = List.length (List.head initialBoard)
-            if player.X >= 0 && player.X < rows && player.Y >= 0 && player.Y < cols then
-                let charPosition: char = FunctionBoard.getCharFromPosition initialBoard (player.X, player.Y)
-                match charPosition with
-                | 'A' -> true
-                | 'D' -> true
-                | _ -> false
-            else
-                false
+            let cellPosition: Cell = FunctionBoard.getCellFromPosition initialBoard (player.X, player.Y)
+            if cellPosition = Empty then false
+            else true
+
 
         // Function to try moving the player and update the board if the move is valid
         let tryMovePlayer (initialBoard: Board) (board: Board) (player : Player) (dx : int, dy : int) =
             let newPlayer: Player  = movePlayer player (dx, dy)
             if isValidMove initialBoard newPlayer then
-                let newBoard: char list list = FunctionBoard.updateBoard board newPlayer player
-                (newBoard, newPlayer)
+                let (newBoard: Cell list list, newPlayerCheck: Player) = FunctionBoard.updateBoard board newPlayer player
+                (newBoard, newPlayerCheck)
             else
                 // Decrease the lives if the move is invalid (QBert falls off the pyramid)
                 let updatedPlayer: Player = { player with Lives = player.Lives - 1 }
@@ -132,7 +143,7 @@ module FunctionsQbert =
 
                     // From here, the distance to the player is the same in both directions, greater than 1 (otherwise, the snake would have reached the player)
                 else if FunctionBoard.isBaseOfPyramid board (purpleBall.X, purpleBall.Y) then
-                    // The snake is in tha base of pyramid, there is two chances:
+                    // The snake is in the base of pyramid, there is two chances:
                     if FunctionBoard.isBaseOfPyramid board (player.X, player.Y) then    
                         // 1. The player is also in the base of the pyramid, so the snake will move in order to not fall off the pyramid 
                         // In this case, dx and dy have different signs. The snake will move along the axis which diferential is negative
@@ -148,7 +159,7 @@ module FunctionsQbert =
                 else
                     // The snake is not in the base of the pyramid and the distance to the player is the same in both directions
                     // In this case, the snake will move randomly, in order to reach the player
-                    let idx: int = Random().Next(0, 2)
+                    let idx: int = Random().Next(0, 2) //Random number between 0 and 1
                     match idx with
                     | 0 -> if dx > 0 then {purpleBall with X = purpleBall.X + 1} else {purpleBall with X = purpleBall.X - 1}
                     | 1 -> if dy > 0 then {purpleBall with Y = purpleBall.Y + 1} else {purpleBall with Y = purpleBall.Y - 1}
