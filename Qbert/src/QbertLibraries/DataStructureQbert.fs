@@ -185,8 +185,21 @@ module DataStructureQbert =
         // Initialize Ugg
         let initializeUgg : Ugg = 
             let T_hop = 3 // This value could be replaced
-            let initialX: int = Random().Next(1, 3)
-            match initialX with
-            | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true}
-            | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true}
-            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false}         // This case is not possible
+            let (initialX: int, initialY: int) = (Board.BoardSize-1, 1)         // Ugg starts at the bottom left corner
+            { X = initialX; Y = initialY; T_hop = T_hop; state_active = true}
+
+        //---------------------------------------------------------------------------------------//
+
+        // Define WrongWay
+        type WrongWay = {
+            X : int;
+            Y : int;
+            T_hop : int; // Time between hops
+            state_active: bool; // True if WrongWay is active
+        }
+
+        // Initialize WrongWay
+        let initializeWrongWay : WrongWay = 
+            let T_hop = 3 // This value could be replaced
+            let (initialX: int, initialY: int) = (1, Board.BoardSize-1)         // WrongWay starts at the top right corner
+            { X = initialX; Y = initialY; T_hop = T_hop; state_active = true}
