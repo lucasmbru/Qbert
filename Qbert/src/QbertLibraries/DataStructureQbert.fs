@@ -113,6 +113,8 @@ module DataStructureQbert =
             else
                 let initialY: int = 1
                 { X = initialX; Y = initialY; T_hop = T_hop; state_active = true}
+
+        //---------------------------------------------------------------------------------------//
         
         // Define PurpleBall
         type PurpleBall = {
@@ -127,9 +129,26 @@ module DataStructureQbert =
         let initializePurpleBall : PurpleBall = 
             let T_hop = 3 // This value could be replaced
             let initialX: int = Random().Next(1, 3)
-            if initialX = 1 then
-                let initialY: int = 2
-                { X = initialX; Y = initialY; T_hop = T_hop; state_active = true; is_snake = false}
-            else
-                let initialY: int = 1
-                { X = initialX; Y = initialY; T_hop = T_hop; state_active = true; is_snake = false}
+            match initialX with
+            | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true; is_snake = false}
+            | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true; is_snake = false}
+            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false; is_snake = false}   // This case is not possible
+
+        //---------------------------------------------------------------------------------------//
+
+        // Define Sam
+        type Sam = {       
+                X : int;
+                Y : int;
+                T_hop : int; // Time between hops
+                state_active: bool; // True if Sam is active
+        }
+
+        // Initialize Sam
+        let initializeSam : Sam = 
+            let T_hop = 3 // This value could be replaced
+            let initialX: int = Random().Next(1, 3)
+            match initialX with
+            | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true}
+            | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true}
+            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false}         // This case is not possible

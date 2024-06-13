@@ -54,7 +54,7 @@ module FunctionsQbert =
                         row |> List.mapi (fun (j: int) (cell: Cell) -> 
                             match (i, j) with
                             | 1, 1 -> Visited                                                                   // Mark the position (1, 1) as Visited
-                            | pX, pY when pX = player.X && pY = player.Y -> Empty                    // Mark the position if FlyingDisc as Empty
+                            | (pX: int), (pY: int) when pX = player.X && pY = player.Y -> Empty                  // Mark the position if FlyingDisc as Empty
                             | _ -> cell)), { player with X = 1; Y = 1 }                                         // Mark the position of the player to (1, 1)
                 else 
                     // If the player is not in a FlyingDisc, we don't change the board
@@ -100,7 +100,7 @@ module FunctionsQbert =
 
     module FunctionCriatures = 
         
-        let moveRedBall (initialBoard : Board) (board : Board) (redBall : RedBall) : RedBall =
+        let moveRedBall (board : Board) (redBall : RedBall) : RedBall =
             // If the red ball is active, it will move randomly
             let (dx: int), (dy: int) = 
                 match Random().Next(0, 2) with
@@ -118,8 +118,9 @@ module FunctionsQbert =
             else
                 { redBall with state_active = false }
 
+        //---------------------------------------------------------------------------------------//
 
-        let movePurpleBall (initialBoard : Board) (board : Board) (player: Player) (purpleBall : PurpleBall) : PurpleBall =
+        let movePurpleBall (board : Board) (player: Player) (purpleBall : PurpleBall) : PurpleBall =
             if purpleBall.is_snake then
                 // If the purple ball is a snake, it will move in the way that minimizes the distance to the player
                 let (dx: int), (dy: int) = player.X - purpleBall.X, player.Y - purpleBall.Y
@@ -184,4 +185,30 @@ module FunctionsQbert =
                     else
                         { purpleBall with X = newX; Y = newY } 
                 else purpleBall
-        
+
+        //---------------------------------------------------------------------------------------//
+
+        let moveSam (board : Board) (sam : Sam) : Sam * Board = 
+            // Sam will move randomly
+            let (dx: int), (dy: int) = 
+                match Random().Next(0, 2) with
+                | 0 -> 1, 0  //Down
+                | 1 -> 0, 1  //Right
+                | _ -> 0, 0  //No move
+
+            let newX: int = sam.X + dx
+            let newY: int = sam.Y + dy
+
+            // We musy check if Sam fall off the pyramid or, if Sam is in an Visited cell, change the cell to NoVisited
+            let actualCharInBoard: Cell = FunctionBoard.getCellFromPosition board (newX, newY)
+            match actualCharInBoard with
+            | Empty -> ({sam with X = newX; Y = newY; state_active = false}, board)
+            | Visited -> 
+                let newBoard: Cell list list = 
+                    board |> List.mapi (fun (i: int) (row: Cell list) -> 
+                        row |> List.mapi (fun (j: int) (cell: Cell) -> 
+                            if i = newX && j = newY then
+                                NoVisited
+                            else cell))
+                ({sam with X = newX; Y = newY}, newBoard)
+            | _ -> ({sam with X = newX; Y = newY}, board)
