@@ -152,3 +152,41 @@ module DataStructureQbert =
             | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true}
             | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true}
             | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false}         // This case is not possible
+
+        //---------------------------------------------------------------------------------------//
+
+        // Define GreenBall
+        type GreenBall = {
+            X : int;
+            Y : int;
+            T_hop : int; // Time between hops
+            state_active: bool; // True if the GreenBall is active
+        }
+
+        // Initialize GreenBall
+        let initializeGreenBall : GreenBall = 
+            let T_hop = 3 // This value could be replaced
+            let initialX: int = Random().Next(1, 3)
+            match initialX with
+            | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true}
+            | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true}
+            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false}         // This case is not possible
+
+        //---------------------------------------------------------------------------------------//
+
+        // Define Ugg
+        type Ugg = {
+            X : int;
+            Y : int;
+            T_hop : int; // Time between hops
+            state_active: bool; // True if Ugg is active
+        }
+
+        // Initialize Ugg
+        let initializeUgg : Ugg = 
+            let T_hop = 3 // This value could be replaced
+            let initialX: int = Random().Next(1, 3)
+            match initialX with
+            | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true}
+            | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true}
+            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false}         // This case is not possible
