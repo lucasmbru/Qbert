@@ -34,13 +34,13 @@ module FunctionsQbert =
             else false 
 
         // Function to update the board with the player's new position
-        let updateBoard (board : Board) (player : Player) (previusPosition : Player) : Board * Player= 
+        let updateBoard (board : Board) (player : Player) : Board * Player= 
             
             // Mark the previous position with Visited if the previus cell is NoVisited
             let boardWithHistory: Cell list list = 
                 board |> List.mapi (fun (i: int) (row: Cell list) -> 
                     row |> List.mapi (fun (j: int) (cell: Cell) -> 
-                        if i = previusPosition.X && j = previusPosition.Y && cell <> Empty then
+                        if i = player.X && j = player.Y && cell <> Empty then
                             match cell with  
                             | NoVisited -> Visited          // If the cell is NoVisited, we change it to Visited
                             | _ -> cell                     // If the cell is Visited or FlyingDics we don't change it
@@ -79,11 +79,11 @@ module FunctionsQbert =
         let tryMovePlayer (initialBoard: Board) (board: Board) (player : Player) (dx : int, dy : int) =
             let newPlayer: Player  = movePlayer player (dx, dy)
             if isValidMove initialBoard newPlayer then
-                let (newBoard: Cell list list, newPlayerCheck: Player) = FunctionBoard.updateBoard board newPlayer player
+                let (newBoard: Cell list list, newPlayerCheck: Player) = FunctionBoard.updateBoard board newPlayer
                 (newBoard, newPlayerCheck)
             else
                 // Decrease the lives if the move is invalid (QBert falls off the pyramid)
-                let updatedPlayer: Player = { player with Lives = player.Lives - 1 }
+                let updatedPlayer: Player = { player with X = 1; Y = 1; Lives = player.Lives - 1 }
                 (initialBoard, updatedPlayer)
 
         // Function to control QBert's movement based on user input
@@ -112,11 +112,10 @@ module FunctionsQbert =
             let newY: int = redBall.Y + dy
 
             // We must check if the red ball fall off the pyramid and it becomes inactive
-            let actualCharInBoard: char = FunctionBoard.getCharFromPosition board (newX, newY)
-            if actualCharInBoard = 'A' then
-                { redBall with X = newX; Y = newY }
-            else
-                { redBall with state_active = false }
+            let actualCharInBoard: Cell = FunctionBoard.getCellFromPosition board (newX, newY)
+            match actualCharInBoard with
+            | Empty -> { redBall with state_active = false }
+            | _ -> { redBall with X = newX; Y = newY }
 
         //---------------------------------------------------------------------------------------//
 
@@ -156,7 +155,7 @@ module FunctionsQbert =
                         match idx with  
                         | 0 -> {purpleBall with X = purpleBall.X - 1}
                         | 1 -> {purpleBall with Y = purpleBall.Y - 1}
-                        | _ -> purpleBall
+                        | _ -> purpleBall 
                 else
                     // The snake is not in the base of the pyramid and the distance to the player is the same in both directions
                     // In this case, the snake will move randomly, in order to reach the player
@@ -257,7 +256,7 @@ module FunctionsQbert =
             // WrongWay will move randomly, starting from the top right corner of the board and stars moving down and to the left 
             let (dx: int), (dy: int) = 
                 match Random().Next(0, 2) with
-                | 0 -> 1, 0  //Left
+                | 0 -> 0, -1  //Left
                 | 1 -> 1, -1 //Diagonal
                 | _ -> 0, 0  //No move
             let newX: int = wrongWay.X + dx
