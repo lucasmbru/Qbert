@@ -4,6 +4,12 @@ open System
 
 module DataStructureQbert = 
 
+    // Define the type Position
+    type Coordinate = {
+        X : int;            // X coordinate
+        Y : int;            // Y coordinate
+    }
+
     module Board = 
 
         // Define the size of the Board
@@ -40,9 +46,9 @@ module DataStructureQbert =
             // Initialize the FlyingDiscs in random positions
             let nRandom1: int = Random().Next(1, BoardSize)
             let nRandom2: int = Random().Next(1, BoardSize)
-            let FlyinDiscTopInitial = { Y = nRandom1 }
-            let FlyingDiscLeftInitial = { X = nRandom2 }
-            (FlyinDiscTopInitial, FlyingDiscLeftInitial)
+            let flyinDiscTopInitial = { Y = nRandom1 }
+            let flyingDiscLeftInitial = { X = nRandom2 }
+            (flyinDiscTopInitial, flyingDiscLeftInitial)
 
 
         // Define the initial state of the board
@@ -97,148 +103,131 @@ module DataStructureQbert =
             boardList
             
 
+
     module Player =
 
         // Define the type of the Position
-        type Player = {
-            X : int;
-            Y : int;
+        let lives: int = 4
+
+        // Define the time of the hop of the player
+        let tHopPlayer = 3
+
+        // Define the type of the Position
+        type Qbert = {
+            Position : Coordinate;
             Lives : int;
-            Inmunity : bool;
             Score : int;
         }
 
-        // Initail player position at the top of the pyramid (1, 1) with a set number of lives
-        let initialPlayer lives = { X = 1; Y = 1; Lives = lives; Inmunity = false; Score = 0}
+        type Player = 
+            | Normal of Qbert       // Normal Qbert which has no inmunity
+            | Inmune of Qbert       // Inmune Qbert which has inmunity
 
-    module Criatures = 
+        // Initail player position at the top of the pyramid (1, 1) with a set number of lives
+        let initialPlayer : Player = 
+            let initialPosition : Coordinate = { X = 1; Y = 1 }
+            Normal { Position = initialPosition; Lives = lives; Score = 0}
+
+    module Creatures = 
+
+        // Define the time of the hop of the criatures
+        let tHopCreature = 3
 
         // Define RedBall
         type RedBall = {
-            X : int;
-            Y : int;
-            T_hop : int; // Time between hops
-            state_active: bool; // True if the RedBall is active
+            Position : Coordinate;    // Position of the RedBall
+            State_active: bool;         // True if the RedBall is active
         }
 
         // Initialize RedBall
         let initializeRedBall : RedBall = 
-            let T_hop = 3
-            let initialX: int = Random().Next(1, 3)
-            if initialX = 1 then
-                let initialY: int = 2
-                { X = initialX; Y = initialY; T_hop = T_hop; state_active = true}
-            else
-                let initialY: int = 1
-                { X = initialX; Y = initialY; T_hop = T_hop; state_active = true}
+            match Random().Next(0, 2) with
+            | 0 -> { Position = { X = 1; Y = 2 }; State_active = true}
+            | 1 -> { Position = { X = 2; Y = 1}; State_active = true}
+            | _ -> { Position = { X = 1; Y = 1}; State_active = false}         // This case is not possible
 
         //---------------------------------------------------------------------------------------//
         
         // Define Coily
         type Coily = {
-            X : int;
-            Y : int;
-            T_hop : int; // Time between hops
-            state_active: bool; // True if Coily is active
+            Position : Coordinate; // Position of Coily
+            State_active: bool; // True if Coily is active
         }
 
         // Initialize Coily
-        let initializeCoily (x: int, y: int) : Coily = 
-            // Coily the snake starts when the 
-            let T_hop = 3 // This value could be replaced
-            { X = x; Y = y; T_hop = T_hop; state_active = true}
-
+        let initializeCoily (position: Coordinate) : Coily = 
+            // Coily the snake starts with the position given
+            { Position = position; State_active = true}
         //---------------------------------------------------------------------------------------//
 
         // Define PurpleBall
         type PurpleBall = {
-            X : int;
-            Y : int;
-            T_hop : int;            // Time between hops
-            state_active: bool;     // True if the PurpleBall is active
-            is_snake: bool;         // True if the PurpleBall is becomes into a snake
-            coily: Coily;
+            Position : Coordinate;  // Position of the PurpleBall
+            State_active: bool;     // True if the PurpleBall is active
+            Is_snake: bool;         // True if the PurpleBall is becomes into a snake
+            Coily: Coily;           // Coily of the PurpleBall
         }
 
         // Initialize PurpleBall
         let initializePurpleBall : PurpleBall = 
-            let T_hop = 3 // This value could be replaced
             match Random().Next(0, 2) with
-            | 0 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true; is_snake = false; coily = initializeCoily(1, 1)}     // Initialice with a ficticious Coily
-            | 1 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true; is_snake = false; coily = initializeCoily(1, 1)}     // Initialice with a ficticious Coily
-            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false; is_snake = false; coily = initializeCoily(1, 1)}    // This case is not possible
-
+            | 0 -> { Position = { X = 1; Y = 2 }; State_active = true; Is_snake = false; Coily = initializeCoily { X = 1; Y = 2}}
+            | 1 -> { Position = { X = 2; Y = 1}; State_active = true; Is_snake = false; Coily = initializeCoily { X = 2; Y = 1}}
+            | _ -> { Position = { X = 1; Y = 1}; State_active = false; Is_snake = false; Coily = initializeCoily { X = 1; Y = 1}}         // This case is not possible
         //---------------------------------------------------------------------------------------//
 
         // Define Sam
         type Sam = {       
-                X : int;
-                Y : int;
-                T_hop : int; // Time between hops
-                state_active: bool; // True if Sam is active
+            Position: Coordinate; // Position of Sam
+            State_active: bool; // True if Sam is active
         }
 
         // Initialize Sam
         let initializeSam : Sam = 
-            let T_hop = 3 // This value could be replaced
-            let initialX: int = Random().Next(1, 3)
-            match initialX with
-            | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true}
-            | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true}
-            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false}         // This case is not possible
+            match Random().Next(0, 2) with
+            | 0 -> { Position = { X = 1; Y = 2 }; State_active = true}
+            | 1 -> { Position = { X = 2; Y = 1}; State_active = true}
+            | _ -> { Position = { X = 1; Y = 1}; State_active = false}         // This case is not possible
 
         //---------------------------------------------------------------------------------------//
 
         // Define GreenBall
         type GreenBall = {
-            X : int;
-            Y : int;
-            T_hop : int; // Time between hops
-            state_active: bool; // True if the GreenBall is active
-            T_inminuty: int; // Time of inminuty privided by the GreenBall
+            Position: Coordinate; // Position of the GreenBall
+            State_active: bool; // True if the GreenBall is active
         }
 
         // Initialize GreenBall
         let initializeGreenBall : GreenBall = 
-            let T_hop = 3 // This value could be replaced
-            let T_inminuty = 20 // This value could be replaced
-            let initialX: int = Random().Next(1, 3)
-            match initialX with
-            | 1 -> { X = 1; Y = 2; T_hop = T_hop; state_active = true; T_inminuty = T_inminuty}
-            | 2 -> { X = 2; Y = 1; T_hop = T_hop; state_active = true; T_inminuty = T_inminuty}
-            | _ -> { X = 1; Y = 1; T_hop = T_hop; state_active = false; T_inminuty = T_inminuty}         // This case is not possible
-
+            match Random().Next(0, 2) with
+            | 0 -> { Position = { X = 1; Y = 2 }; State_active = true}
+            | 1 -> { Position = { X = 2; Y = 1}; State_active = true}
+            | _ -> { Position = { X = 1; Y = 1}; State_active = false}         // This case is not possible
         //---------------------------------------------------------------------------------------//
 
         // Define Ugg
         type Ugg = {
-            X : int;
-            Y : int;
-            T_hop : int; // Time between hops
-            state_active: bool; // True if Ugg is active
+            Position: Coordinate; // Position of Ugg
+            State_active: bool; // True if Ugg is active
         }
 
         // Initialize Ugg
         let initializeUgg : Ugg = 
-            let T_hop = 3 // This value could be replaced
             let (initialX: int, initialY: int) = (Board.BoardSize-1, 1)         // Ugg starts at the bottom left corner
-            { X = initialX; Y = initialY; T_hop = T_hop; state_active = true}
+            { Position = { X = initialX; Y = initialY}; State_active = true}
 
         //---------------------------------------------------------------------------------------//
 
         // Define WrongWay
         type WrongWay = {
-            X : int;
-            Y : int;
-            T_hop : int; // Time between hops
-            state_active: bool; // True if WrongWay is active
+            Position: Coordinate; // Position of WrongWay
+            State_active: bool; // True if WrongWay is active
         }
 
         // Initialize WrongWay
         let initializeWrongWay : WrongWay = 
-            let T_hop = 3 // This value could be replaced
             let (initialX: int, initialY: int) = (1, Board.BoardSize-1)         // WrongWay starts at the top right corner
-            { X = initialX; Y = initialY; T_hop = T_hop; state_active = true}
+            { Position = { X = initialX; Y = initialY}; State_active = true}
 
         //---------------------------------------------------------------------------------------//
 
@@ -250,7 +239,6 @@ module DataStructureQbert =
             | GreenBall of GreenBall
             | Ugg of Ugg
             | WrongWay of WrongWay
-        
 
     module Score = 
 
