@@ -6,6 +6,5 @@
   <ItemGroup>
     <Compile Include="DataStructureQbert.fs" />
     <Compile Include="FunctionsQbert.fs" />
-    <Compile Include="Score.fs" />
   </ItemGroup>
 </Project>
