@@ -245,7 +245,6 @@ module DataStructureQbert =
         // Define a date type for the all criatures
         type Creatures = 
             | RedBall of RedBall
-            | Coily of Coily
             | PurpleBall of PurpleBall
             | Sam of Sam
             | GreenBall of GreenBall

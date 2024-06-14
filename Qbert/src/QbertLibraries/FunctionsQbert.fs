@@ -294,7 +294,6 @@ module FunctionsQbert =
         let moveCreature (creatures : Creatures) (board : Board) (player : Player) : Creatures * Board =
             match creatures with
             | RedBall (redBall: RedBall) -> (RedBall (moveRedBall board redBall), board)
-            | Coily (coily: Coily) -> (Coily (moveCoily board player coily), board)
             | PurpleBall (purpleBall: PurpleBall) -> (PurpleBall (movePurpleBall board purpleBall player), board)
             | Sam (sam: Sam) -> 
                 let (newSam: Sam, newBoard: Board) = moveSam board sam
@@ -327,11 +326,13 @@ module FunctionsQbert =
         //---------------------------------------------------------------------------------------//
 
         let checkPlayerPurpleBallCollision (board: Board) (player: Player) (purpleBall: PurpleBall) (creatures : Creatures list) : Board * Player * Creatures list * bool=
-            if player.X = purpleBall.X && player.Y = purpleBall.Y then
+            if player.X = purpleBall.X && player.Y = purpleBall.Y && purpleBall.is_snake = false then
                 // If QBert collides with a RedBall, the player loses a life and stars in the same position, new board and the Creatures list empty and indicator of collision true
                 let (flyingDT: FlyingDiscTop, flyingDL: FlyingDiscLeft) = initialiceFlyingDics 
                 let initBoard: Board = initialBoard flyingDT flyingDL
                 (initBoard, { player with Lives = player.Lives - 1 }, [], true)
+            else if purpleBall.is_snake then
+                checkPlayerCoilyCollision board player purpleBall.coily creatures
             else (board, player, creatures, false)
 
         //---------------------------------------------------------------------------------------//
@@ -391,7 +392,6 @@ module FunctionsQbert =
         let checkPlayerCollision (board: Board) (player: Player) (creature: Creatures) (creaturesList: Creatures list) : Board * Player * Creatures list * bool =
             match creature with
             | RedBall (redBall: RedBall) -> checkPlayerRedBallCollision board player redBall creaturesList
-            | Coily (coily: Coily) -> checkPlayerCoilyCollision board player coily creaturesList
             | PurpleBall (purpleBall: PurpleBall) -> checkPlayerPurpleBallCollision board player purpleBall creaturesList
             | Sam (sam: Sam) -> checkPlayerSamCollision board player sam creaturesList
             | GreenBall (greenBall: GreenBall) -> checkPlayerGreenBallCollision board player greenBall creaturesList
