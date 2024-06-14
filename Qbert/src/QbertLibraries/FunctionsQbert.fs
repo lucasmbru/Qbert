@@ -9,7 +9,6 @@ open QbertLibraries.DataStructureQbert.Score // Import the DataStructure module 
 
 module FunctionsQbert = 
 
-
     module FunctionBoard = 
 
         // Function to print the board
