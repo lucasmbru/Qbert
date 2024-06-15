@@ -159,21 +159,23 @@ module FunctionsQbert =
                         // 1. The player is also in the base of the pyramid, so Coily will move in order to not fall off the pyramid 
                         // In this case, dx and dy have different signs. Coily will move along the axis which diferential is negative
                         if dx < 0 then 
-                            {coily with Position.X = coily.Position.X - 1}
+                            {coily with Position = changeCoordinate coily.Position Up}
                         else 
-                            {coily with Position.Y = coily.Position.Y - 1}
+                            {coily with Position = changeCoordinate coily.Position Left}
                     else 
                         // 2. The player is not in the base of the pyramid, so Coily will move randomly, decrasing the X or Y position
                         match Random().Next(0, 2) with  
-                        | 0 -> {coily with Position.X = coily.Position.X - 1}
-                        | 1 -> {coily with Position.Y = coily.Position.Y - 1}
+                        | 0 -> {coily with Position = changeCoordinate coily.Position Up}
+                        | 1 -> {coily with Position = changeCoordinate coily.Position Left}
                         | _ -> coily
                 else
                     // Coily is not in the base of the pyramid and the distance to the player is the same in both directions
                     // In this case, Coily will move randomly, in order to reach the player
                     match Random().Next(0, 2) with
-                    | 0 -> if dx > 0 then {coily with Position.X = coily.Position.X + 1} else {coily with Position.X = coily.Position.X - 1}
-                    | 1 -> if dy > 0 then {coily with Position.Y = coily.Position.Y + 1} else {coily with Position.Y = coily.Position.Y - 1}
+                    | 0 -> if dx > 0 then {coily with Position = changeCoordinate coily.Position Down} 
+                            else {coily with Position = changeCoordinate coily.Position Up}
+                    | 1 -> if dy > 0 then {coily with Position = changeCoordinate coily.Position Right} 
+                            else {coily with Position = changeCoordinate coily.Position Left}
                     | _ -> coily
 
         //---------------------------------------------------------------------------------------//
@@ -185,13 +187,13 @@ module FunctionsQbert =
                 { purpleBall with State_active = false; Coily = coily |> moveCoily board player }
 
             else // If the purple ball is not a snake yet
-                let (dx: int), (dy: int) = 
+                let moveDirection: MoveDirection = 
                     match Random().Next(0, 2) with
-                    | 0 -> 1, 0  //Down
-                    | 1 -> 0, 1  //Right
-                    | _ -> 0, 0  //No move
+                    | 0 -> Down    //Down
+                    | 1 -> Right   //Right
+                    | _ -> NoMove  //No move
 
-                let newPBPosition: Coordinate = {X = purpleBall.Position.X + dx; Y = purpleBall.Position.Y + dy}
+                let newPBPosition: Coordinate = changeCoordinate purpleBall.Position moveDirection 
                 
                 // We must check if the purple ball reaches the base of the pyramid and it converts into a snake
                 let actualCharInBoard: Cell = FunctionBoard.getCellFromPosition board newPBPosition
@@ -205,13 +207,13 @@ module FunctionsQbert =
 
         let moveSam (board : Board) (sam : Sam) : Sam * Board = 
             // Sam will move randomly starting from the position (1, 2) or (2, 1)
-            let (dx: int), (dy: int) = 
+            let moveDirection : MoveDirection = 
                 match Random().Next(0, 2) with
-                | 0 -> 1, 0  //Down
-                | 1 -> 0, 1  //Right
-                | _ -> 0, 0  //No move
+                | 0 -> Down 
+                | 1 -> Right
+                | _ -> NoMove
 
-            let newSamPosition: Coordinate = {X = sam.Position.X + dx; Y = sam.Position.Y + dy}
+            let newSamPosition: Coordinate = changeCoordinate sam.Position moveDirection
 
             // We musy check if Sam fall off the pyramid or, if Sam is in an Visited cell, change the cell to NoVisited
             let actualCharInBoard: Cell = FunctionBoard.getCellFromPosition board newSamPosition
@@ -231,13 +233,13 @@ module FunctionsQbert =
 
         let moveGreenBall (board : Board) (greenBall : GreenBall) : GreenBall =
             // GreenBall will move randomly, starting from the position (1, 2) or (2, 1)
-            let (dx: int), (dy: int) = 
+            let moveDirection: MoveDirection = 
                 match Random().Next(0, 2) with
-                | 0 -> 1, 0  //Down
-                | 1 -> 0, 1  //Right
-                | _ -> 0, 0  //No move
+                | 0 -> Down
+                | 1 -> Right
+                | _ -> NoMove
             
-            let newGBPosition = {X = greenBall.Position.X + dx; Y = greenBall.Position.Y + dy}
+            let newGBPosition: Coordinate = changeCoordinate greenBall.Position moveDirection
 
             // We must check if the green ball fall off the pyramid
             let actualCellInBoard: Cell = FunctionBoard.getCellFromPosition board newGBPosition
@@ -249,13 +251,13 @@ module FunctionsQbert =
 
         let moveUgg (ugg: Ugg) : Ugg =
             // Ugg will move randomly, starting from the bottom left corner of the board and stars moving up and to the right
-            let (dx: int), (dy: int) = 
+            let moveDirection: MoveDirection = 
                 match Random().Next(0, 2) with
-                | 0 -> -1, 0  //Up
-                | 1 -> -1, 1  //Diagonal
-                | _ -> 0, 0   //No move
+                | 0 -> Up
+                | 1 -> UpRight
+                | _ -> NoMove
             
-            let newUggPosition = {X = ugg.Position.X + dx; Y = ugg.Position.Y + dy}
+            let newUggPosition: Coordinate = changeCoordinate ugg.Position moveDirection
 
             // Now, we must check if Ugg fall until row 1
             if newUggPosition.X = 1 then
@@ -267,13 +269,13 @@ module FunctionsQbert =
 
         let moveWrongWay (wrongWay: WrongWay) : WrongWay =
             // WrongWay will move randomly, starting from the top right corner of the board and stars moving down and to the left 
-            let (dx: int), (dy: int) = 
+            let moveDirection: MoveDirection = 
                 match Random().Next(0, 2) with
-                | 0 -> 0, -1  //Left
-                | 1 -> 1, -1 //Diagonal
-                | _ -> 0, 0  //No move
+                | 0 -> Left
+                | 1 -> DownLeft
+                | _ -> NoMove
 
-            let newWWPosition: Coordinate = {X = wrongWay.Position.X + dx; Y = wrongWay.Position.Y + dy}
+            let newWWPosition: Coordinate = changeCoordinate wrongWay.Position moveDirection
 
             // Now, we must check if WrongWay fall until column 1
             if newWWPosition.X = 1 then
