@@ -10,6 +10,30 @@ module DataStructureQbert =
         Y : int;            // Y coordinate
     }
 
+    type MoveDirection = 
+        | Up 
+        | Down
+        | Left
+        | Right
+        | UpLeft
+        | UpRight
+        | DownLeft
+        | DownRight
+        | NoMove
+
+    let changeCoordinate (coordinate: Coordinate) (moveDirection: MoveDirection) : Coordinate = 
+        match moveDirection with
+        | Up -> { X = coordinate.X - 1; Y = coordinate.Y }
+        | Down -> { X = coordinate.X + 1; Y = coordinate.Y }
+        | Left -> { X = coordinate.X; Y = coordinate.Y - 1 }
+        | Right -> { X = coordinate.X; Y = coordinate.Y + 1 }
+        | UpLeft -> { X = coordinate.X - 1; Y = coordinate.Y - 1 }
+        | UpRight -> { X = coordinate.X - 1; Y = coordinate.Y + 1 }
+        | DownLeft -> { X = coordinate.X + 1; Y = coordinate.Y - 1 }
+        | DownRight -> { X = coordinate.X + 1; Y = coordinate.Y + 1 }
+        | NoMove -> { X = coordinate.X; Y = coordinate.Y }
+
+
     module Board = 
 
         // Define the size of the Board
@@ -113,20 +137,12 @@ module DataStructureQbert =
         let tHopPlayer = 3
 
         // Define the type of the Position
-        type Qbert = {
+        type Player = {
             Position : Coordinate;
             Lives : int;
             Score : int;
+            Inmunity : bool;
         }
-
-        type Player = 
-            | Normal of Qbert       // Normal Qbert which has no inmunity
-            | Inmune of Qbert       // Inmune Qbert which has inmunity
-
-        // Initail player position at the top of the pyramid (1, 1) with a set number of lives
-        let initialPlayer : Player = 
-            let initialPosition : Coordinate = { X = 1; Y = 1 }
-            Normal { Position = initialPosition; Lives = lives; Score = 0}
 
     module Creatures = 
 
