@@ -93,13 +93,11 @@ type MyTests() =
         //Board2.[0].[3] <- Board.Cell.FlyingDisc // se elimina el flying disc
         Board2.[2].[0] <- Board.Cell.FlyingDisc
         Board2.[1].[2] <- Board.Cell.Visited
-        Board1.[1].[3] <- Board.Cell.Visited
+        Board2.[1].[3] <- Board.Cell.Visited
         Board2.[1].[1] <- Board.Cell.Visited
         let Board2List = Board2 |> Array.map Array.toList |> Array.toList
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
-        // este test falló porque no se consideró el aumento de puntaje en caso de que 
-        // no se haya visitado previamente la celda (1,1)
 
     [<Test>]
     member this.AllCellsVisitedTest() =
@@ -124,9 +122,6 @@ type MyTests() =
             Score = 60;
             Inmunity = false;
         }
-        let FDTop:Board.FlyingDiscTop = {Y=3}
-        let FDLeft:Board.FlyingDiscLeft = {X=2}
-        let BoardInitial = Board.initialBoard FDTop FDLeft
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
@@ -137,7 +132,7 @@ type MyTests() =
         Board1.[1].[3] <- Board.Cell.Visited
         let Board1List = Board1 |> Array.map Array.toList |> Array.toList
         let MovementDirection = MoveDirection.Down
-        let actual = FunctionPlayer.tryMovePlayer BoardInitial Board1List Player1 MovementDirection
+        let actual = FunctionPlayer.tryMovePlayer Board1List Player1 MovementDirection
         let Player2:Player.Player = {
             Position = {X=2; Y=3};
             Lives = 3;
@@ -166,20 +161,17 @@ type MyTests() =
             Score = 60;
             Inmunity = false;
         }
-        let FDTop:Board.FlyingDiscTop = {Y=3}
-        let FDLeft:Board.FlyingDiscLeft = {X=2}
-        let BoardInitial = Board.initialBoard FDTop FDLeft
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
                 Board1.[i].[j] <- Board.Cell.NoVisited
-        Board1.[0].[3] <- Board.Cell.FlyingDisc
+        Board1.[0].[4] <- Board.Cell.FlyingDisc
         Board1.[2].[0] <- Board.Cell.FlyingDisc
         Board1.[1].[2] <- Board.Cell.Visited
         Board1.[1].[3] <- Board.Cell.Visited
         let Board1List = Board1 |> Array.map Array.toList |> Array.toList
         let MovementDirection = MoveDirection.Up
-        let actual = FunctionPlayer.tryMovePlayer BoardInitial Board1List Player1 MovementDirection
+        let actual = FunctionPlayer.tryMovePlayer Board1List Player1 MovementDirection
         let Player2:Player.Player = {
             Position = {X=1; Y=1};
             Lives = 2;
@@ -188,10 +180,6 @@ type MyTests() =
         }
         let expected = (Board1List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
-        // este test falla
-        // creo que debería devolverse el mismo tablero, y no el tablero inicial como está programado
-
-        // hastá acá es lo que subí a github
 
     [<Test>]
     member this.CheckPlayerRedBallCollision() =
@@ -234,8 +222,6 @@ type MyTests() =
         }
 
         let actual = InteractionPlayerCriatures.checkPlayerRedBallCollision Board1List Player1 RedBall1 CreaturesList
-        let expected = (Board1List, Player2, [], true)
+        let emptyList: Creatures.Creatures list = List.empty
+        let expected = (Board1List, Player2, emptyList, true)
         Assert.That(actual, Is.EqualTo(expected))
-        // este test también falla
-        // creo que debería devolverse el mismo tablero, y no el tablero inicial como está programado
-        // igual que el test anterior

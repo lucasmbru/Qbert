@@ -61,9 +61,12 @@ module FunctionsQbert =
                         | 1, 1 -> Visited                                                                                      // Mark the position (1, 1) as Visited
                         | (pX: int), (pY: int) when pX = player.Position.X && pY = player.Position.Y -> Empty                  // Mark the position if FlyingDisc as Empty
                         | _ -> cell)), 
-                        {player with Position = {X = 1; Y = 1}}                                                         // Mark the position of the player to (1, 1)
+                        if board[1][1] = NoVisited then
+                            {player with Position = {X = 1; Y = 1}; Score = player.Score + scoreVisitNewCell}                   // Mark the position of the player to (1, 1) and add scoreVisitNewCell to the player's score if the cell is NoVisited
+                        else
+                            {player with Position = {X = 1; Y = 1}}                                                             // Mark the position of the player to (1, 1)
             else 
-                // If the player is not in a FlyingDisc, we don't change the board
+                // If the player is niether in a NoVisited cell nor in a FlyingDisc, we must not update the player's position and score
                 (board, player)
 
 
@@ -88,25 +91,25 @@ module FunctionsQbert =
             {player with Position = changeCoordinate player.Position moveDirection}
 
         // Function to check if the move is valid matching with initialBoard
-        let isValidMove (initialBoard: Board) (player : Player) =
-            let cellPosition: Cell = FunctionBoard.getCellFromPosition initialBoard (player.Position)
+        let isValidMove (board: Board) (player : Player) =
+            let cellPosition: Cell = FunctionBoard.getCellFromPosition board (player.Position)
             if cellPosition = Empty then false
             else true
 
 
         // Function to try moving the player and update the board if the move is valid
-        let tryMovePlayer (initialBoard: Board) (board: Board) (player : Player) (moveDirection: MoveDirection) =
+        let tryMovePlayer (board: Board) (player : Player) (moveDirection: MoveDirection) =
             let newPlayer: Player  = movePlayer player moveDirection
-            if isValidMove initialBoard newPlayer then
+            if isValidMove board newPlayer then
                 let (newBoard: Cell list list, newPlayerCheck: Player) = FunctionBoard.updateBoard board newPlayer
                 (newBoard, newPlayerCheck)
             else
-                // Decrease the lives if the move is invalid (QBert falls off the pyramid)
+                // Decrease the lives if the move is invalid (QBert falls off the pyramid) and return the same board
                 let updatedPlayer: Player = { player with Position = {X = 1; Y = 1}; Lives = player.Lives - 1 }
-                (initialBoard, updatedPlayer)
+                (board, updatedPlayer)
 
         // Function to control QBert's movement based on user input
-        let controlPlayer (initialBoard: Board) (board: Board) player input =
+        let controlPlayer (board: Board) player input =
             let moveDirection =
                 match input with
                 | 'w' -> Up
@@ -114,7 +117,7 @@ module FunctionsQbert =
                 | 'a' -> Left
                 | 'd' -> Right
                 | _ -> NoMove
-            tryMovePlayer initialBoard board player moveDirection
+            tryMovePlayer board player moveDirection
 
 
     module FunctionCriatures = 
@@ -299,20 +302,16 @@ module FunctionsQbert =
 
         let checkPlayerRedBallCollision (board: Board) (player: Player) (redBall: RedBall) (creatures : Creatures list) : Board * Player * Creatures list * bool =
             if player.Position = redBall.Position then
-                // If QBert collides with a RedBall, the player loses a life and stars in the same position, new board and the Creatures list empty and indicator of collision true
-                let (flyingDT: FlyingDiscTop, flyingDL: FlyingDiscLeft) = initialiceFlyingDics 
-                let initBoard = initialBoard flyingDT flyingDL
-                (initBoard, { player with Lives = player.Lives - 1 }, [], true)
+                // If QBert collides with a RedBall, the player loses a life and stars in the same position, the Creatures list empty and indicator of collision true, same board
+                (board, { player with Lives = player.Lives - 1 }, [], true)
             else (board, player, creatures, false)
 
         //---------------------------------------------------------------------------------------//
 
         let checkPlayerCoilyCollision (board: Board) (player: Player) (coily: Coily) (creatures : Creatures list) : Board * Player * Creatures list * bool =
             if player.Position = coily.Position then
-                // If QBert collides with Coily, the player loses a life and stars in the top of the pyramid, new board and the Creatures list empty and indicator of collision true
-                let (flyingDT: FlyingDiscTop, flyingDL: FlyingDiscLeft) = initialiceFlyingDics
-                let initBoard: Board = initialBoard flyingDT flyingDL
-                (initBoard, { player with Position = {X = 1; Y = 1}; Lives = player.Lives - 1 }, [], true)
+                // If QBert collides with Coily, the player loses a life and stars in the top of the pyramid, the Creatures list empty and indicator of collision true, same board
+                (board, { player with Position = {X = 1; Y = 1}; Lives = player.Lives - 1 }, [], true)
             else (board, player, creatures, false)
 
         //---------------------------------------------------------------------------------------//
@@ -320,9 +319,7 @@ module FunctionsQbert =
         let checkPlayerPurpleBallCollision (board: Board) (player: Player) (purpleBall: PurpleBall) (creatures : Creatures list) : Board * Player * Creatures list * bool=
             if player.Position = purpleBall.Position && purpleBall.Is_snake = false then
                 // If QBert collides with a RedBall, the player loses a life and stars in the same position, new board and the Creatures list empty and indicator of collision true
-                let (flyingDT: FlyingDiscTop, flyingDL: FlyingDiscLeft) = initialiceFlyingDics 
-                let initBoard: Board = initialBoard flyingDT flyingDL
-                (initBoard, { player with Lives = player.Lives - 1 }, [], true)
+                (board, { player with Lives = player.Lives - 1 }, [], true)
             else if purpleBall.Is_snake then
                 checkPlayerCoilyCollision board player purpleBall.Coily creatures
             else (board, player, creatures, false)
@@ -359,10 +356,8 @@ module FunctionsQbert =
 
         let checkPlayerUggCollision (board: Board) (player: Player) (ugg: Ugg) (creatures : Creatures list) : Board * Player * Creatures list * bool =
             if player.Position = ugg.Position then
-                // If QBert collides with Ugg, the player loses a life and stars in the same position, new board and the Creatures list empty and indicator of collision true
-                let (flyingDT: FlyingDiscTop, flyingDL: FlyingDiscLeft) = initialiceFlyingDics
-                let initBoard: Board = initialBoard flyingDT flyingDL
-                (initBoard, { player with Lives = player.Lives - 1 }, [], true)                
+                // If QBert collides with Ugg, the player loses a life and stars in the same position, and the Creatures list empty and indicator of collision true and same board
+                (board, { player with Lives = player.Lives - 1 }, [], true)                
             else 
                 // if there is no collision, return the same board, player and creatures list
                 (board, player, creatures, false)
@@ -371,10 +366,8 @@ module FunctionsQbert =
 
         let checkPlayerWrongWayCollision (board: Board) (player: Player) (wrongWay: WrongWay) (creatures: Creatures list) : Board * Player * Creatures list * bool =
             if player.Position = wrongWay.Position then
-                // If QBert collides with WrongWay, the player loses a life and stars in the same position, new board and the Creatures list empty and indicator of collision true
-                let (flyingDT: FlyingDiscTop, flyingDL: FlyingDiscLeft) = initialiceFlyingDics
-                let initBoard: Board = initialBoard flyingDT flyingDL
-                (initBoard, { player with Lives = player.Lives - 1 }, [], true)
+                // If QBert collides with WrongWay, the player loses a life and stars in the same position, and the Creatures list empty and indicator of collision true and same board
+                (board, { player with Lives = player.Lives - 1 }, [], true)
             else
                 // if there is no collision, return the same board, player and creatures list
                 (board, player, creatures, false)
