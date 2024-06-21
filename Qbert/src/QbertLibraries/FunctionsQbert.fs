@@ -36,7 +36,7 @@ module FunctionsQbert =
             else false 
 
         // Function to update the board with the player's new position
-        let updateBoard (board : Board) (player : Player) : Board * Player= 
+        let updateBoard (board : Board) (player : Player) : Board * Player = 
             // Update the board with the player's new position and score 
                     
             // If the player is in a FlyingDisc, we must change that cell to Empty and move the player to the position (1, 1)
