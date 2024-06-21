@@ -19,7 +19,78 @@ type MyTests() =
         let actual = changeCoordinate Coordinate1 movement
         let expected: Coordinate = {X=2; Y=1}
         Assert.That(actual, Is.EqualTo(expected))
+        
+    [<Test>]
+    member this.PlayerMoveUp() =
+        let Player1: Player.Player = {
+            Position = {X=3; Y=1};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        let movementDirection = MoveDirection.Up
+        let actual = FunctionPlayer.movePlayer Player1 movementDirection
+        let expected: Player.Player = {
+            Position = {X=2; Y=1};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        Assert.That(actual, Is.EqualTo(expected))
 
+    [<Test>]
+    member this.PlayerMoveDown() =
+        let Player1: Player.Player = {
+            Position = {X=3; Y=1};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        let movementDirection = MoveDirection.Down
+        let actual = FunctionPlayer.movePlayer Player1 movementDirection
+        let expected: Player.Player = {
+            Position = {X=4; Y=1};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.PlayerMoveLeft() =
+        let Player1: Player.Player = {
+            Position = {X=3; Y=2};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        let movementDirection = MoveDirection.Left
+        let actual = FunctionPlayer.movePlayer Player1 movementDirection
+        let expected: Player.Player = {
+            Position = {X=3; Y=1};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.PlayerMoveRight() =
+        let Player1: Player.Player = {
+            Position = {X=3; Y=2};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        let movementDirection = MoveDirection.Right
+        let actual = FunctionPlayer.movePlayer Player1 movementDirection
+        let expected: Player.Player = {
+            Position = {X=3; Y=3};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        Assert.That(actual, Is.EqualTo(expected))
 
     [<Test>]
     member this.PyramidBaseTest() =
@@ -53,10 +124,10 @@ type MyTests() =
         let Board2: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board2.[i].[j] <- Board.Cell.NoVisited
-        Board2.[0].[3] <- Board.Cell.FlyingDisc
-        Board2.[2].[0] <- Board.Cell.FlyingDisc
-        Board2.[1].[2] <- Board.Cell.Visited
+                Board2[i][j] <- Board.Cell.NoVisited
+        Board2[0][3] <- Board.Cell.FlyingDisc
+        Board2[2][0] <- Board.Cell.FlyingDisc
+        Board2[1][2] <- Board.Cell.Visited
         let Board2List = Board2 |> Array.map Array.toList |> Array.toList
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
@@ -67,11 +138,11 @@ type MyTests() =
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board1.[i].[j] <- Board.Cell.NoVisited
-        Board1.[0].[3] <- Board.Cell.FlyingDisc
-        Board1.[2].[0] <- Board.Cell.FlyingDisc
-        Board1.[1].[2] <- Board.Cell.Visited
-        Board1.[1].[3] <- Board.Cell.Visited
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
         let Board1List = Board1 |> Array.map Array.toList |> Array.toList
         let Player1:Player.Player = {
             Position = {X=0; Y=3};
@@ -89,12 +160,11 @@ type MyTests() =
         let Board2: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board2.[i].[j] <- Board.Cell.NoVisited
-        //Board2.[0].[3] <- Board.Cell.FlyingDisc // se elimina el flying disc
-        Board2.[2].[0] <- Board.Cell.FlyingDisc
-        Board2.[1].[2] <- Board.Cell.Visited
-        Board2.[1].[3] <- Board.Cell.Visited
-        Board2.[1].[1] <- Board.Cell.Visited
+                Board2[i][j] <- Board.Cell.NoVisited
+        Board2[2][0] <- Board.Cell.FlyingDisc
+        Board2[1][2] <- Board.Cell.Visited
+        Board2[1][3] <- Board.Cell.Visited
+        Board2[1][1] <- Board.Cell.Visited
         let Board2List = Board2 |> Array.map Array.toList |> Array.toList
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
@@ -105,9 +175,9 @@ type MyTests() =
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board1.[i].[j] <- Board.Cell.Visited
-        Board1.[0].[3] <- Board.Cell.FlyingDisc
-        Board1.[2].[0] <- Board.Cell.FlyingDisc
+                Board1[i][j] <- Board.Cell.Visited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
         let Board1List = Board1 |> Array.map Array.toList |> Array.toList
         let actual = FunctionBoard.allCellsAreVisited Board1List
         let expected = true
@@ -125,11 +195,11 @@ type MyTests() =
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board1.[i].[j] <- Board.Cell.NoVisited
-        Board1.[0].[3] <- Board.Cell.FlyingDisc
-        Board1.[2].[0] <- Board.Cell.FlyingDisc
-        Board1.[1].[2] <- Board.Cell.Visited
-        Board1.[1].[3] <- Board.Cell.Visited
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
         let Board1List = Board1 |> Array.map Array.toList |> Array.toList
         let MovementDirection = MoveDirection.Down
         let actual = FunctionPlayer.tryMovePlayer Board1List Player1 MovementDirection
@@ -142,12 +212,12 @@ type MyTests() =
         let Board2: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board2.[i].[j] <- Board.Cell.NoVisited
-        Board2.[0].[3] <- Board.Cell.FlyingDisc
-        Board2.[2].[0] <- Board.Cell.FlyingDisc
-        Board2.[1].[2] <- Board.Cell.Visited
-        Board2.[1].[3] <- Board.Cell.Visited
-        Board2.[2].[3] <- Board.Cell.Visited
+                Board2[i][j] <- Board.Cell.NoVisited
+        Board2[0][3] <- Board.Cell.FlyingDisc
+        Board2[2][0] <- Board.Cell.FlyingDisc
+        Board2[1][2] <- Board.Cell.Visited
+        Board2[1][3] <- Board.Cell.Visited
+        Board2[2][3] <- Board.Cell.Visited
         let Board2List = Board2 |> Array.map Array.toList |> Array.toList
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
@@ -164,11 +234,11 @@ type MyTests() =
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board1.[i].[j] <- Board.Cell.NoVisited
-        Board1.[0].[4] <- Board.Cell.FlyingDisc
-        Board1.[2].[0] <- Board.Cell.FlyingDisc
-        Board1.[1].[2] <- Board.Cell.Visited
-        Board1.[1].[3] <- Board.Cell.Visited
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][4] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
         let Board1List = Board1 |> Array.map Array.toList |> Array.toList
         let MovementDirection = MoveDirection.Up
         let actual = FunctionPlayer.tryMovePlayer Board1List Player1 MovementDirection
@@ -193,11 +263,11 @@ type MyTests() =
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
             for j in 1..BoardSize-1-i do
-                Board1.[i].[j] <- Board.Cell.NoVisited
-        Board1.[0].[3] <- Board.Cell.FlyingDisc
-        Board1.[2].[0] <- Board.Cell.FlyingDisc
-        Board1.[1].[2] <- Board.Cell.Visited
-        Board1.[1].[3] <- Board.Cell.Visited
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
         let Board1List = Board1 |> Array.map Array.toList |> Array.toList
         let RedBall1:Creatures.RedBall = {
             Position = {X=1; Y=3}; 
@@ -224,4 +294,180 @@ type MyTests() =
         let actual = InteractionPlayerCriatures.checkPlayerRedBallCollision Board1List Player1 RedBall1 CreaturesList
         let emptyList: Creatures.Creatures list = List.empty
         let expected = (Board1List, Player2, emptyList, true)
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckPlayerRedBallCollisionFalse() =
+        let BoardSize = 9
+        let Player1:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let RedBall1:Creatures.RedBall = {
+            Position = {X=1; Y=2}; 
+            State_active = true
+        }
+        let PurpleBall1:Creatures.PurpleBall = {
+            Position = {X=4; Y=1}; 
+            State_active = true; 
+            Is_snake = false; 
+            Coily = {Position = {X=4; Y=1}; State_active = true}
+        }
+        let CreaturesList = [
+            Creatures.RedBall RedBall1;
+            Creatures.PurpleBall PurpleBall1
+        ]
+
+        let actual = InteractionPlayerCriatures.checkPlayerRedBallCollision Board1List Player1 RedBall1 CreaturesList
+        let expected = (Board1List, Player1, CreaturesList, false)
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckPurpleBallToSnakeTrue() =
+        let BoardSize = 9
+        let Player1:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let RedBall1:Creatures.RedBall = {
+            Position = {X=1; Y=2}; 
+            State_active = true
+        }
+        let PurpleBall1:Creatures.PurpleBall = {
+            Position = {X=7; Y=1}; 
+            State_active = true; 
+            Is_snake = false; 
+            Coily = {Position = {X=7; Y=1}; State_active = true}
+        }
+        let CreaturesList = [
+            Creatures.RedBall RedBall1;
+            Creatures.PurpleBall PurpleBall1
+        ]
+        let actual = FunctionCriatures.movePurpleBall Board1List PurpleBall1 Player1
+        let PurpleBall2:Creatures.PurpleBall = {
+            Position = {X=7; Y=1}; 
+            State_active = true; 
+            Is_snake = true; 
+            Coily = {Position = {X=7; Y=1}; State_active = true}
+        }
+        let expected = PurpleBall2
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckPlayerCoilyCollisionTrue() =
+        let BoardSize = 9
+        let Player1:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let RedBall1:Creatures.RedBall = {
+            Position = {X=1; Y=3}; 
+            State_active = true
+        }
+        let PurpleBall1:Creatures.PurpleBall = {
+            Position = {X=1; Y=3}; 
+            State_active = true; 
+            Is_snake = true; 
+            Coily = {Position = {X=1; Y=3}; State_active = true}
+        }
+        let CreaturesList = [
+            Creatures.Creatures.RedBall RedBall1;
+            Creatures.Creatures.PurpleBall PurpleBall1
+        ]
+        let Player2:Player.Player = {
+            Position = {X=1; Y=1};
+            Lives = 2;
+            Score = 60;
+            Inmunity = false;
+        }
+        
+        let CreaturesListEmpty:List<Creatures.Creatures> = List.empty
+
+        let actual = InteractionPlayerCriatures.checkPlayerCoilyCollision Board1List Player1 PurpleBall1.Coily CreaturesList
+        let expected = (Board1List, Player2, CreaturesListEmpty, true)
+        Assert.That(actual, Is.EqualTo(expected))
+    
+
+    [<Test>]
+    member this.CheckPlayerSamCollisionTrue() =
+        let BoardSize = 9
+        let Player1:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let RedBall1:Creatures.RedBall = {
+            Position = {X=3; Y=2}; 
+            State_active = true
+        }
+        let PurpleBall1:Creatures.PurpleBall = {
+            Position = {X=5; Y=1}; 
+            State_active = true; 
+            Is_snake = true; 
+            Coily = {Position = {X=1; Y=3}; State_active = true}
+        }
+        let Sam1:Creatures.Sam = {
+            Position = {X=1; Y=3}; 
+            State_active = true
+        }
+        let CreaturesList = [
+            Creatures.Creatures.RedBall RedBall1;
+            Creatures.Creatures.PurpleBall PurpleBall1;
+            Creatures.Creatures.Sam Sam1
+        ]
+        let Player2:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 110;
+            Inmunity = false;
+        }
+        
+        let CreaturesListWithoutSam = 
+            CreaturesList |> List.filter (fun x -> x <> Creatures.Creatures.Sam Sam1)
+
+        let actual = InteractionPlayerCriatures.checkPlayerSamCollision Board1List Player1 Sam1 CreaturesList
+        let expected = (Board1List, Player2, CreaturesListWithoutSam, true)
         Assert.That(actual, Is.EqualTo(expected))
