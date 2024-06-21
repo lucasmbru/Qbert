@@ -72,7 +72,7 @@ module FunctionsQbert =
 
         let allCellsAreVisited (board: Board) =
             // Return true if all the cells in the pyramid are visited
-            // We must check if in the board there are any NoVisited cell            
+            // We must check if in the board there is any NoVisited cell            
 
             let noNoVisited (cell: Cell) : bool = 
                 // Return true if the cell is not NoVisited
@@ -119,6 +119,17 @@ module FunctionsQbert =
                 | _ -> NoMove
             tryMovePlayer board player moveDirection
 
+        let checkPlayerWin (board: Board) (player: Player) =
+            // Return true if the player wins the game
+            // We must check if all the cells in the pyramid are visited
+            if FunctionBoard.allCellsAreVisited board then true
+            else false
+
+        let checkPlayerLoss (player: Player) : bool * string =
+            // Return true if the player loses the game and string for the message
+            // We must check if the player has no more lives
+            if player.Lives = 0 then (true, "Game Over. Score: " + player.Score.ToString())
+            else (false, "")
 
     module FunctionCriatures = 
         

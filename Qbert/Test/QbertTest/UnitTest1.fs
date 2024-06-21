@@ -540,7 +540,7 @@ type MyTests() =
         NewBoard.[3].[2] <- Board.Cell.Visited
         NewBoard.[2].[2] <- Board.Cell.Visited
         let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
-        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let actual = FunctionPlayer.controlPlayer Board1List Player1 input
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
 
@@ -587,7 +587,7 @@ type MyTests() =
         NewBoard.[3].[1] <- Board.Cell.Visited
         NewBoard.[3].[2] <- Board.Cell.Visited
         let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
-        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let actual = FunctionPlayer.controlPlayer Board1List Player1 input
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
 
@@ -635,7 +635,7 @@ type MyTests() =
         NewBoard.[3].[2] <- Board.Cell.Visited
         NewBoard.[3].[3] <- Board.Cell.Visited
         let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
-        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let actual = FunctionPlayer.controlPlayer Board1List Player1 input
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
 
@@ -683,7 +683,7 @@ type MyTests() =
         NewBoard[3][2] <- Board.Cell.Visited
         NewBoard[4][2] <- Board.Cell.Visited
         let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
-        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let actual = FunctionPlayer.controlPlayer Board1List Player1 input
         let expected = (Board2List, Player2)
         Assert.That(actual, Is.EqualTo(expected))
 
