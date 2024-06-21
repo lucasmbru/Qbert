@@ -688,7 +688,7 @@ type MyTests() =
         Assert.That(actual, Is.EqualTo(expected))
 
     [<Test>]
-    member this.CheckCoilyMovement() =
+    member this.CheckCoilyMovementX() =
         let BoardSize = 9
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
         for i in 1..BoardSize-1 do
@@ -712,6 +712,36 @@ type MyTests() =
         let actual = FunctionCriatures.moveCoily Board1List Player1 Coily1
         let Coily2:Creatures.Coily = {
             Position = {X=6; Y=1};
+            State_active = true
+        }
+        let expected = Coily2
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckCoilyMovementY() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let Coily1:Creatures.Coily = {
+            Position = {X=1; Y=7};
+            State_active = true
+        }
+        let actual = FunctionCriatures.moveCoily Board1List Player1 Coily1
+        let Coily2:Creatures.Coily = {
+            Position = {X=1; Y=6};
             State_active = true
         }
         let expected = Coily2
