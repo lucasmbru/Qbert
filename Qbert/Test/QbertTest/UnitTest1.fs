@@ -133,6 +133,29 @@ type MyTests() =
         Assert.That(actual, Is.EqualTo(expected))
 
     [<Test>]
+    member this.UpdateBoardTestAlreadyVisited() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = 
+            Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize do
+            for j in 1..BoardSize-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 0;
+            Inmunity = false;
+        }
+        let actual = FunctionBoard.updateBoard Board1List Player1
+        let expected = (Board1List, Player1)
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
     member this.UpdateBoardTestFlyingDisc() =
         let BoardSize = 9
         let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
@@ -470,4 +493,226 @@ type MyTests() =
 
         let actual = InteractionPlayerCriatures.checkPlayerSamCollision Board1List Player1 Sam1 CreaturesList
         let expected = (Board1List, Player2, CreaturesListWithoutSam, true)
+        Assert.That(actual, Is.EqualTo(expected))
+
+
+    [<Test>]
+    member this.CheckPlayerInputW() =
+        let BoardSize = 9
+        let initialBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                initialBoard.[i].[j] <- Board.Cell.NoVisited
+        initialBoard.[0].[3] <- Board.Cell.FlyingDisc
+        initialBoard.[2].[0] <- Board.Cell.FlyingDisc
+        let initialBoardList = initialBoard |> Array.map Array.toList |> Array.toList
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[2][1] <- Board.Cell.Visited
+        Board1[3][1] <- Board.Cell.Visited
+        Board1[3][2] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=3; Y=2};
+            Lives = 3;
+            Score = 90;
+            Inmunity = false;
+        }
+        let input:char = 'w'
+        let Player2:Player.Player = {
+            Position = {X=2; Y=2};
+            Lives = 3;
+            Score = 120;
+            Inmunity = false;
+        }
+        let NewBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                NewBoard.[i].[j] <- Board.Cell.NoVisited
+        NewBoard.[0].[3] <- Board.Cell.FlyingDisc
+        NewBoard.[2].[0] <- Board.Cell.FlyingDisc
+        NewBoard.[2].[1] <- Board.Cell.Visited
+        NewBoard.[3].[1] <- Board.Cell.Visited
+        NewBoard.[3].[2] <- Board.Cell.Visited
+        NewBoard.[2].[2] <- Board.Cell.Visited
+        let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
+        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let expected = (Board2List, Player2)
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckPlayerInputA() =
+        let BoardSize = 9
+        let initialBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                initialBoard.[i].[j] <- Board.Cell.NoVisited
+        initialBoard.[0].[3] <- Board.Cell.FlyingDisc
+        initialBoard.[2].[0] <- Board.Cell.FlyingDisc
+        let initialBoardList = initialBoard |> Array.map Array.toList |> Array.toList
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[2][1] <- Board.Cell.Visited
+        Board1[3][1] <- Board.Cell.Visited
+        Board1[3][2] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=3; Y=2};
+            Lives = 3;
+            Score = 90;
+            Inmunity = false;
+        }
+        let input:char = 'a'
+        let Player2:Player.Player = {
+            Position = {X=3; Y=1};
+            Lives = 3;
+            Score = 90;
+            Inmunity = false;
+        }
+        let NewBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                NewBoard.[i].[j] <- Board.Cell.NoVisited
+        NewBoard.[0].[3] <- Board.Cell.FlyingDisc
+        NewBoard.[2].[0] <- Board.Cell.FlyingDisc
+        NewBoard.[2].[1] <- Board.Cell.Visited
+        NewBoard.[3].[1] <- Board.Cell.Visited
+        NewBoard.[3].[2] <- Board.Cell.Visited
+        let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
+        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let expected = (Board2List, Player2)
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckPlayerInputD() =
+        let BoardSize = 9
+        let initialBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                initialBoard.[i].[j] <- Board.Cell.NoVisited
+        initialBoard.[0].[3] <- Board.Cell.FlyingDisc
+        initialBoard.[2].[0] <- Board.Cell.FlyingDisc
+        let initialBoardList = initialBoard |> Array.map Array.toList |> Array.toList
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[2][1] <- Board.Cell.Visited
+        Board1[3][1] <- Board.Cell.Visited
+        Board1[3][2] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=3; Y=2};
+            Lives = 3;
+            Score = 90;
+            Inmunity = false;
+        }
+        let input:char = 'd'
+        let Player2:Player.Player = {
+            Position = {X=3; Y=3};
+            Lives = 3;
+            Score = 120;
+            Inmunity = false;
+        }
+        let NewBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                NewBoard.[i].[j] <- Board.Cell.NoVisited
+        NewBoard.[0].[3] <- Board.Cell.FlyingDisc
+        NewBoard.[2].[0] <- Board.Cell.FlyingDisc
+        NewBoard.[2].[1] <- Board.Cell.Visited
+        NewBoard.[3].[1] <- Board.Cell.Visited
+        NewBoard.[3].[2] <- Board.Cell.Visited
+        NewBoard.[3].[3] <- Board.Cell.Visited
+        let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
+        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let expected = (Board2List, Player2)
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckPlayerInputS() =
+        let BoardSize = 9
+        let initialBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                initialBoard.[i].[j] <- Board.Cell.NoVisited
+        initialBoard.[0].[3] <- Board.Cell.FlyingDisc
+        initialBoard.[2].[0] <- Board.Cell.FlyingDisc
+        let initialBoardList = initialBoard |> Array.map Array.toList |> Array.toList
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[2][1] <- Board.Cell.Visited
+        Board1[3][1] <- Board.Cell.Visited
+        Board1[3][2] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=3; Y=2};
+            Lives = 3;
+            Score = 90;
+            Inmunity = false;
+        }
+        let input:char = 's'
+        let Player2:Player.Player = {
+            Position = {X=4; Y=2};
+            Lives = 3;
+            Score = 120;
+            Inmunity = false;
+        }
+        let NewBoard: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                NewBoard[i][j] <- Board.Cell.NoVisited
+        NewBoard[0][3] <- Board.Cell.FlyingDisc
+        NewBoard[2][0] <- Board.Cell.FlyingDisc
+        NewBoard[2][1] <- Board.Cell.Visited
+        NewBoard[3][1] <- Board.Cell.Visited
+        NewBoard[3][2] <- Board.Cell.Visited
+        NewBoard[4][2] <- Board.Cell.Visited
+        let Board2List = NewBoard |> Array.map Array.toList |> Array.toList
+        let actual = FunctionPlayer.controlPlayer initialBoardList Board1List Player1 input
+        let expected = (Board2List, Player2)
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckCoilyMovement() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=3};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let Coily1:Creatures.Coily = {
+            Position = {X=7; Y=1};
+            State_active = true
+        }
+        let actual = FunctionCriatures.moveCoily Board1List Player1 Coily1
+        let Coily2:Creatures.Coily = {
+            Position = {X=6; Y=1};
+            State_active = true
+        }
+        let expected = Coily2
         Assert.That(actual, Is.EqualTo(expected))
