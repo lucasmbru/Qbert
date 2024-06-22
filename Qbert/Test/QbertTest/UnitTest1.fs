@@ -759,3 +759,298 @@ type MyTests() =
         }
         let expected = Coily2
         Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckRedBallMovementValid() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        Board1[1][4] <- Board.Cell.Visited
+        Board1[1][5] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=5};
+            Lives = 3;
+            Score = 120;
+            Inmunity = false;
+        }
+        let RedBall1:Creatures.RedBall = {
+            Position = {X=2; Y=2};
+            State_active = true
+        }
+        let RedBall2:Creatures.RedBall = {
+            Position = {X=3; Y=2};
+            State_active = true
+        }
+        let RedBall3:Creatures.RedBall = {
+            Position = {X=2; Y=3};
+            State_active = true
+        }
+        let resultado = FunctionCriatures.moveRedBall Board1List RedBall1
+        let actual = resultado=RedBall2 || resultado=RedBall3
+        let expected = true
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckRedBallMovementFall() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        Board1[1][4] <- Board.Cell.Visited
+        Board1[1][5] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=5};
+            Lives = 3;
+            Score = 120;
+            Inmunity = false;
+        }
+        let RedBall1:Creatures.RedBall = {
+            Position = {X=7; Y=1};
+            State_active = true
+        }
+        let RedBall2:Creatures.RedBall = {
+            Position = {X=7; Y=1};
+            State_active = false
+        }
+        let actual = FunctionCriatures.moveRedBall Board1List RedBall1
+        let expected = RedBall2
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckCoilyMovementRandom() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        Board1[1][4] <- Board.Cell.Visited
+        Board1[1][5] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=1};
+            Lives = 3;
+            Score = 120;
+            Inmunity = false;
+        }
+        let Coily1:Creatures.Coily = {
+            Position = {X=3; Y=3};
+            State_active = true
+        }
+        let Coily2:Creatures.Coily = {
+            Position = {X=3; Y=2};
+            State_active = true
+        }
+        let Coily3:Creatures.Coily = {
+            Position = {X=2; Y=3};
+            State_active = true
+        }
+        let resultado = FunctionCriatures.moveCoily Board1List Player1 Coily1
+        let actual = resultado=Coily2 || resultado=Coily3
+        let expected = true
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckSamMovement() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        Board1[1][4] <- Board.Cell.Visited
+        Board1[1][5] <- Board.Cell.Visited
+        Board1[2][1] <- Board.Cell.Visited
+        Board1[2][2] <- Board.Cell.Visited
+        Board1[3][2] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=1};
+            Lives = 3;
+            Score = 210;
+            Inmunity = false;
+        }
+        let Sam1:Creatures.Sam = {
+            Position = {X=3; Y=1};
+            State_active = true
+        }
+        let Sam2:Creatures.Sam = {
+            Position = {X=3; Y=2};
+            State_active = true
+        }
+        let Sam3:Creatures.Sam = {
+            Position = {X=4; Y=1};
+            State_active = true
+        }
+        let Board2: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board2[i][j] <- Board.Cell.NoVisited
+        Board2[0][3] <- Board.Cell.FlyingDisc
+        Board2[2][0] <- Board.Cell.FlyingDisc
+        Board2[1][2] <- Board.Cell.Visited
+        Board2[1][3] <- Board.Cell.Visited
+        Board2[1][4] <- Board.Cell.Visited
+        Board2[1][5] <- Board.Cell.Visited
+        Board2[2][1] <- Board.Cell.Visited
+        Board2[2][2] <- Board.Cell.Visited
+        let Board2List = Board2 |> Array.map Array.toList |> Array.toList
+
+        let resultado = FunctionCriatures.moveSam Board1List Sam1
+        let actual = resultado=(Sam2,Board2List) || resultado=(Sam3,Board1List)
+        let expected = true
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckGreenBallMovement() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=1};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let GreenBall1:Creatures.GreenBall = {
+            Position = {X=3; Y=1};
+            State_active = true
+        }
+        let GreenBall2:Creatures.GreenBall = {
+            Position = {X=3; Y=2};
+            State_active = true
+        }
+        let GreenBall3:Creatures.GreenBall = {
+            Position = {X=4; Y=1};
+            State_active = true
+        }
+        let resultado = FunctionCriatures.moveGreenBall Board1List GreenBall1
+        let actual = resultado=GreenBall2 || resultado=GreenBall3
+        let expected = true
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckGreenBallMovementFall() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=1};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }
+        let GreenBall1:Creatures.GreenBall = {
+            Position = {X=7; Y=1};
+            State_active = true
+        }
+        let GreenBall2:Creatures.GreenBall = {
+            Position = {X=7; Y=1};
+            State_active = false
+        }
+        let actual = FunctionCriatures.moveGreenBall Board1List GreenBall1
+        let expected = GreenBall2
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckUggMovement() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=1};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }        
+        let Ugg1:Creatures.Ugg = {
+            Position = {X=3; Y=1};
+            State_active = true
+        } 
+        let Ugg2:Creatures.Ugg = {
+            Position = {X=2; Y=1};
+            State_active = true
+        }
+        let Ugg3:Creatures.Ugg = {
+            Position = {X=2; Y=2};
+            State_active = true
+        }
+        let resultado = FunctionCriatures.moveUgg Ugg1
+        let actual = resultado=Ugg2 || resultado=Ugg3
+        let expected = true
+        Assert.That(actual, Is.EqualTo(expected))
+
+    [<Test>]
+    member this.CheckWrongWayMove() =
+        let BoardSize = 9
+        let Board1: Board.Cell array array = Array.init BoardSize (fun _ -> Array.init BoardSize (fun _ -> Board.Cell.Empty))
+        for i in 1..BoardSize-1 do
+            for j in 1..BoardSize-1-i do
+                Board1[i][j] <- Board.Cell.NoVisited
+        Board1[0][3] <- Board.Cell.FlyingDisc
+        Board1[2][0] <- Board.Cell.FlyingDisc
+        Board1[1][2] <- Board.Cell.Visited
+        Board1[1][3] <- Board.Cell.Visited
+        let Board1List = Board1 |> Array.map Array.toList |> Array.toList
+        let Player1:Player.Player = {
+            Position = {X=1; Y=1};
+            Lives = 3;
+            Score = 60;
+            Inmunity = false;
+        }        
+        let WrongWay1:Creatures.WrongWay = {
+            Position = {X=1; Y=7};
+            State_active = true
+        }
+        let WrongWay2:Creatures.WrongWay = {
+            Position = {X=1; Y=6};
+            State_active = true
+        }
+        let WrongWay3:Creatures.WrongWay = {
+            Position = {X=2; Y=6};
+            State_active = true
+        }
+        let resultado = FunctionCriatures.moveWrongWay WrongWay1
+        let actual = (resultado.Position={X=1; Y=6}) || (resultado.Position={X=2; Y=6})
+        let expected = true
+        Assert.That(actual, Is.EqualTo(expected))
