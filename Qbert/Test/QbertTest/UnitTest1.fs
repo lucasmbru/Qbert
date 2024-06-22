@@ -379,7 +379,7 @@ type MyTests() =
             State_active = true
         }
         let PurpleBall1:Creatures.PurpleBall = {
-            Position = {X=7; Y=1}; 
+            Position = {X=6; Y=1}; 
             State_active = true; 
             Is_snake = false; 
             Coily = {Position = {X=7; Y=1}; State_active = true}
@@ -389,15 +389,28 @@ type MyTests() =
             Creatures.PurpleBall PurpleBall1
         ]
         let actual = FunctionCriatures.movePurpleBall Board1List PurpleBall1 Player1
-        let PurpleBall2:Creatures.PurpleBall = {
+        let PurpleBallDown:Creatures.PurpleBall = {
             Position = {X=7; Y=1}; 
-            State_active = true; 
+            State_active = false; 
             Is_snake = true; 
             Coily = {Position = {X=7; Y=1}; State_active = true}
         }
-        let expected = PurpleBall2
-        Assert.That(actual, Is.EqualTo(expected))
+        let purpleBallRigth:Creatures.PurpleBall = {
+            Position = {X=6; Y=2}; 
+            State_active = false; 
+            Is_snake = true; 
+            Coily = {Position = {X=6; Y=2}; State_active = true}
+        }
 
+        if PurpleBallDown.Position = actual.Position then 
+            let expected = PurpleBallDown
+            Assert.That(actual, Is.EqualTo(expected))
+        else 
+            let expected = purpleBallRigth
+            Assert.That(actual, Is.EqualTo(expected))
+
+        
+        
     [<Test>]
     member this.CheckPlayerCoilyCollisionTrue() =
         let BoardSize = 9
